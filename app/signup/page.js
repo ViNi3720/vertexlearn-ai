@@ -11,7 +11,7 @@ export default function SignupPage(){
     async function handleSubmit(e) {
         e.preventDefault();// page reloade ko rokne ke liye
         const res = await fetch("/api/signup",{
-            method:"POSt",
+            method:"POST",
             headers:{"Content-Type":"application/json"},
             body: JSON.stringify({name,email,password,role}),
         });
