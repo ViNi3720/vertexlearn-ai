@@ -10,7 +10,7 @@ export async function POST(request) {
     // message user se
     const { message } = await request.json();
     // kaun sa model use hua gemini ka
-    const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
+    const model = genAI.getGenerativeModel({ model: "gemini-3.7-flash" });
 
     const result = await model.generateContent(message);
     const responce = result.response;
