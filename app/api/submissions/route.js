@@ -25,15 +25,38 @@ export async function POST(request) {
         { status: 403 },
       );
     }
-    // datadase mai save kro
+    // NAYA Assessment ka data nikalo
+
+    const assessmentResult = await pool.query(
+      "SELECT * FROM assessments WHERE id = $1",
+      [assessmentId],
+    );
+    const assessment = assessmentResult.rows[0];
+    const correctQuestions = assessment.questions;
+
+    //NAYA score calculate kro
+    let correctCount = 0;
+    for (let i = 0; i < answers.length; i++) {
+      const studentAnswer = answers[i].answer.toLowerCase().trim();
+      const correctAnswer = correctQuestions[i].answer.toLowerCase().trim();
+
+      if (studentAnswer === correctAnswer) {
+        correctCount++;
+      }
+    }
+
+    const score =
+      (correctCount / correctQuestions.length) * assessment.max_score;
+
+    // datadase mai save kro(ab score bhi save kro)
     const result = await pool.query(
-      "INSERT INTO submissions (assessment_id, student_id, answers) VALUES ($1, $2, $3) RETURNING *",
-      [assessmentId, user.id, JSON.stringify(answers)],
+      "INSERT INTO submissions (assessment_id, student_id, answers, score, graded_at) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+      [assessmentId, user.id, JSON.stringify(answers), score, new Date()],
     );
 
     // responce ko return kro
     return NextResponse.json(
-      { message: "Submitted successfully", submission: result.rows[0] },
+      { message: "Submitted successfully", submission: result.rows[0], score },
       { status: 201 },
     );
   } catch (err) {
