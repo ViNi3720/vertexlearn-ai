@@ -3,6 +3,7 @@ import { useState } from "react";
 export default function SubmitAnswerButton({ assessmentId }) {
   const [answer, setAnswer] = useState("");
   const [message, setMessage] = useState("");
+  const [score, setScore] = useState("null");
 
   async function handleSubmit() {
     const res = await fetch("/api/submissions", {
@@ -13,6 +14,7 @@ export default function SubmitAnswerButton({ assessmentId }) {
     const data = await res.json();
     if (res.ok) {
       setMessage("Submitted successfully!");
+      setScore(data.score);
     } else {
       setMessage(data.message);
     }
@@ -35,6 +37,7 @@ export default function SubmitAnswerButton({ assessmentId }) {
         Submit Answer
       </button>
       {message && <p className="mt-2 text-sm text-gray-600">{message}</p>}
+      {score !== null && <p>Your score: {score}</p>}
     </div>
   );
 }
